@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dooh Event 360 — Premium Fotobudka & Obsługa Eventów</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        gold: '#C9922A',
+        'gold-light': '#E8B84B',
+        'gold-pale': '#F5D98A',
+        'gold-dim': '#7A5519',
+        navy: '#0A1628',
+        'bg-base': '#07070E',
+        'bg-surface': '#0D0D1C',
+        'bg-elevated': '#121225',
+        'cream': '#F0EBE0',
+        'muted': '#9A8F7E',
+      },
+      fontFamily: {
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        body: ['DM Sans', 'system-ui', 'sans-serif'],
+      },
+    }
+  }
+}
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Magic wand cursor ── */
+  * {
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><line x1='5' y1='5' x2='27' y2='27' stroke='%23C9922A' stroke-width='2.5' stroke-linecap='round'/><line x1='23' y1='27' x2='27' y2='23' stroke='%238B6510' stroke-width='3.5' stroke-linecap='round'/><line x1='5' y1='1' x2='5' y2='9' stroke='%23E8B84B' stroke-width='1.8' stroke-linecap='round'/><line x1='1' y1='5' x2='9' y2='5' stroke='%23E8B84B' stroke-width='1.8' stroke-linecap='round'/><line x1='2.5' y1='2.5' x2='7.5' y2='7.5' stroke='%23F5D98A' stroke-width='1.1' stroke-linecap='round' opacity='0.65'/><line x1='7.5' y1='2.5' x2='2.5' y2='7.5' stroke='%23F5D98A' stroke-width='1.1' stroke-linecap='round' opacity='0.65'/><circle cx='13' cy='8' r='1.5' fill='%23F5D98A' opacity='0.85'/><circle cx='9' cy='14' r='1' fill='%23F5D98A' opacity='0.6'/><circle cx='17' cy='12' r='0.9' fill='%23E8B84B' opacity='0.7'/></svg>") 5 5, auto !important;
+  }
+
+  :root {
+    --gold: #C9922A;
+    --gold-light: #E8B84B;
+    --gold-dim: #7A5519;
+    --bg: #07070E;
+    --surface: #0D0D1C;
+    --elevated: #121225;
+    --cream: #F0EBE0;
+    --muted: #9A8F7E;
+    --navy: #0A1628;
+  }
+
+  /* JS handles smooth scroll — keep auto so rAF easing controls it */
+  html { scroll-behavior: auto; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── Grain texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.032;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* ── Gold shimmer keyframe ── */
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes rotateSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0); }
+    50%       { box-shadow: 0 0 0 12px rgba(201,146,42,0.12); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+  @keyframes scanline {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #7A5519 0%, #C9922A 30%, #E8B84B 50%, #F5D98A 60%, #E8B84B 70%, #C9922A 85%, #7A5519 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+
+  .text-gold-static {
+    background: linear-gradient(135deg, #C9922A, #E8B84B, #C9922A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Navbar ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 2rem;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(7,7,14,0.98) 0%, rgba(7,7,14,0) 100%);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,146,42,0.1);
+  }
+
+  nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 5%; right: 5%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,146,42,0.3), transparent);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-logo img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+  }
+  /* Glow halo behind the nav logo icon */
+  .nav-logo::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(201,146,42,0.28) 0%,
+      rgba(232,184,75,0.10) 45%,
+      transparent 70%);
+    transform: translateY(-50%);
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .nav-logo:hover::before { opacity: 1; }
+  .nav-logo:hover img {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 8px rgba(201,146,42,0.6))
+            drop-shadow(0 0 3px rgba(232,184,75,0.4));
+  }
+  .nav-logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--cream);
+  }
+  .nav-logo-text span {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(240,235,224,0.65);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0; right: 100%;
+    height: 1px;
+    background: var(--gold);
+    transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+  .nav-links a:hover::after { right: 0; }
+
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: 1px solid var(--gold);
+    background: linear-gradient(135deg, rgba(201,146,42,0.15), rgba(232,184,75,0.08));
+    color: var(--gold-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.25s, box-shadow 0.25s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-gold::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,146,42,0.3), rgba(232,184,75,0.2));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .btn-gold:hover::before { opacity: 1; }
+  .btn-gold:hover {
+    box-shadow: 0 4px 24px rgba(201,146,42,0.25), 0 0 0 1px rgba(201,146,42,0.4);
+    transform: translateY(-1px);
+  }
+  .btn-gold:active { transform: translateY(0); }
+
+  .btn-gold-solid {
+    background: linear-gradient(135deg, #C9922A, #E8B84B);
+    color: #07070E;
+    border: none;
+    font-weight: 700;
+  }
+  .btn-gold-solid::before { background: linear-gradient(135deg, #E8B84B, #F5D98A); }
+  .btn-gold-solid:hover {
+    box-shadow: 0 8px 32px rgba(201,146,42,0.4);
+  }
+
+  /* ── Section dividers ── */
+  .divider-gold {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto;
+  }
+
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .ornament::before, .ornament::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,146,42,0.5));
+  }
+  .ornament::after { background: linear-gradient(90deg, rgba(201,146,42,0.5), transparent); }
+  .ornament span {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: color 0.3s, text-shadow 0.3s;
+    cursor: default;
+  }
+  .ornament:hover span {
+    color: var(--gold-light);
+    text-shadow:
+      0 0 8px  rgba(232,184,75,0.7),
+      0 0 20px rgba(201,146,42,0.4),
+      0 0 40px rgba(201,146,42,0.15);
+  }
+  .ornament:hover::before,
+  .ornament:hover::after {
+    background: linear-gradient(90deg, transparent, rgba(232,184,75,0.7));
+    transition: background 0.3s;
+  }
+  .ornament:hover::after {
+    background: linear-gradient(90deg, rgba(232,184,75,0.7), transparent);
+  }
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    will-change: transform, opacity;
+    transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+    will-change: auto;
+  }
+
+  /* ── FAQ accordion ── */
+  .faq-item { border-bottom: 1px solid rgba(201,146,42,0.15); }
+  .faq-trigger {
+    width: 100%;
+    text-align: left;
+    padding: 1.25rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    transition: color 0.2s;
+    gap: 1rem;
+  }
+  .faq-trigger:hover { color: var(--gold-light); }
+  .faq-icon {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+    position: relative;
+    color: var(--gold);
+  }
+  .faq-icon::before, .faq-icon::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .faq-icon::before { width: 100%; height: 1.5px; top: 50%; transform: translateY(-50%); }
+  .faq-icon::after  { width: 1.5px; height: 100%; left: 50%; transform: translateX(-50%); }
+  .faq-item.open .faq-icon::after { transform: translateX(-50%) rotate(90deg); opacity: 0; }
+  .faq-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .faq-body p {
+    padding-bottom: 1.25rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.75;
+  }
+  .faq-item.open .faq-body { max-height: 300px; }
+
+  /* ── Hero glow blobs ── */
+  .glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  /* ── Card styles ── */
+  .service-card {
+    background: #0D0D1C center/cover no-repeat; /* overridden per-card with image */
+    border: 1px solid rgba(201,146,42,0.2);
+    padding: 2rem 1.25rem;
+    will-change: transform;
+    transition: border-color 0.3s, transform 0.55s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Dark overlay sits between the photo and the text */
+  .service-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(7,7,14,0.82) 0%,
+      rgba(7,7,14,0.68) 60%,
+      rgba(7,7,14,0.50) 100%
+    );
+    z-index: 0;
+    transition: opacity 0.4s;
+  }
+  .service-card:hover::after { opacity: 0.78; }
+  /* Gold top-line above the overlay */
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,146,42,0.6), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    z-index: 2;
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  /* All direct children float above the overlay */
+  .service-card > * { position: relative; z-index: 1; }
+  .service-card:hover {
+    border-color: rgba(201,146,42,0.5);
+    transform: scale(1.15);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 48px rgba(201,146,42,0.12);
+    z-index: 10;
+  }
+
+  .testimonial-card {
+    background: linear-gradient(135deg, rgba(20,20,45,0.98), rgba(28,28,58,0.9));
+    border: 1px solid rgba(201,146,42,0.2);
+    padding: 2rem;
+    position: relative;
+    transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
+  }
+  .testimonial-card:hover {
+    transform: scale(1.15);
+    border-color: rgba(201,146,42,0.45);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 40px rgba(201,146,42,0.10);
+    z-index: 10;
+  }
+  .testimonial-card::before {
+    content: '\201C';
+    position: absolute;
+    top: -0.5rem; left: 1.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5rem;
+    line-height: 1;
+    color: rgba(201,146,42,0.2);
+    pointer-events: none;
+  }
+
+  /* ── Pricing ── */
+  .pricing-card {
+    background: linear-gradient(160deg, rgba(20,20,45,0.98), rgba(16,16,36,0.98));
+    border: 1px solid rgba(201,146,42,0.2);
+    padding: 2.5rem 2rem;
+    transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s, border-color 0.3s;
+  }
+  .pricing-card.featured {
+    background: linear-gradient(160deg, rgba(201,146,42,0.12), rgba(232,184,75,0.06));
+    border-color: rgba(201,146,42,0.5);
+    box-shadow: 0 0 60px rgba(201,146,42,0.08);
+    transform: scale(1.03);
+  }
+  .pricing-card:hover {
+    transform: scale(1.15);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 48px rgba(201,146,42,0.10);
+    z-index: 10;
+    border-color: rgba(201,146,42,0.45);
+  }
+  .pricing-card.featured:hover {
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 70px rgba(201,146,42,0.22);
+  }
+
+  /* ── Gallery ── */
+  .gallery-img {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    isolation: isolate; /* own stacking context so z-indices work predictably */
+    transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+  }
+  .gallery-img:hover {
+    transform: scale(1.15);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 40px rgba(201,146,42,0.12);
+    z-index: 10;
+  }
+  .gallery-img img {
+    position: relative; z-index: 1;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4,0,0.2,1), filter 0.4s;
+    filter: grayscale(20%) contrast(1.05);
+  }
+  .gallery-img:hover img {
+    transform: scale(1.06);
+    filter: grayscale(0%) contrast(1.1);
+  }
+  .gallery-img::after {
+    content: '';
+    position: absolute; z-index: 2;
+    inset: 0;
+    background: linear-gradient(to top, rgba(7,7,14,0.7) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .gallery-img .overlay-color {
+    position: absolute; z-index: 3;
+    inset: 0;
+    background: rgba(201,146,42,0.08);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .gallery-img:hover .overlay-color { opacity: 0; }
+  .gallery-img .img-label {
+    position: absolute; z-index: 4;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  }
+  /* counter-scale so text stays the same size as parent scales 1.15× */
+  .gallery-img:hover .img-label {
+    transform: scale(0.87);
+    opacity: 0.75;
+  }
+  .gallery-img .img-label span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.4rem;
+    font-weight: 600;
+    color: #F0EBE0;
+    letter-spacing: 0.07em;
+    text-align: center;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.9), 0 0 32px rgba(0,0,0,0.7);
+  }
+
+  /* ── Steps ── */
+  .step-number {
+    width: 56px; height: 56px;
+    border: 1px solid rgba(201,146,42,0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    flex-shrink: 0;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(201,146,42,0.1), transparent 70%);
+  }
+
+  /* ── Stat numbers ── */
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* ── Hero ── */
+  .hero-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.2rem, 7vw, 7rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .section-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── Star rating ── */
+  .stars { color: var(--gold); letter-spacing: 2px; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border: 1px solid rgba(201,146,42,0.3);
+    background: rgba(201,146,42,0.08);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+  /* ── 360 ring animation ── */
+  .ring-link {
+    display: block;
+    position: relative;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    outline: none;
+  }
+  .ring-link:hover {
+    transform: scale(1.15);
+  }
+
+  /* Outer glow halo that blooms on hover */
+  .ring-link::before {
+    content: '';
+    position: absolute;
+    inset: -60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center,
+      rgba(201,146,42,0.22) 0%,
+      rgba(232,184,75,0.10) 40%,
+      transparent 70%);
+    opacity: 0;
+    filter: blur(24px);
+    transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .ring-link:hover::before { opacity: 1; }
+
+  /* Second tighter pulse ring on hover */
+  .ring-link::after {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,146,42,0);
+    transition: border-color 0.4s, box-shadow 0.4s;
+    pointer-events: none;
+  }
+  .ring-link:hover::after {
+    border-color: rgba(201,146,42,0.25);
+    box-shadow: 0 0 32px rgba(201,146,42,0.18), inset 0 0 32px rgba(201,146,42,0.06);
+  }
+
+  .ring-360 {
+    width: 520px;
+    height: 520px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ring-outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(201,146,42,0.2);
+    animation: rotateSlow 20s linear infinite;
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+  .ring-link:hover .ring-outer {
+    border-color: rgba(201,146,42,0.55);
+    box-shadow: 0 0 24px rgba(201,146,42,0.2);
+  }
+  .ring-outer::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 50%;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 12px var(--gold-light);
+    transform: translateX(-50%);
+    transition: box-shadow 0.4s;
+  }
+  .ring-link:hover .ring-outer::before {
+    box-shadow: 0 0 24px var(--gold-light), 0 0 48px rgba(201,146,42,0.4);
+  }
+  .ring-mid {
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,146,42,0.12);
+    animation: rotateSlow 14s linear infinite reverse;
+    transition: border-color 0.4s;
+  }
+  .ring-link:hover .ring-mid {
+    border-color: rgba(201,146,42,0.35);
+  }
+  .ring-mid::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 50%;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    box-shadow: 0 0 10px var(--gold-light);
+    transform: translateX(-50%);
+  }
+  .ring-inner {
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px dashed rgba(201,146,42,0.1);
+    transition: border-color 0.4s;
+  }
+  .ring-link:hover .ring-inner {
+    border-color: rgba(201,146,42,0.22);
+  }
+  .ring-center {
+    position: absolute;
+    inset: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.5), 0 0 80px rgba(201,146,42,0.1);
+    transition: box-shadow 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .ring-link:hover .ring-center {
+    box-shadow:
+      inset 0 0 80px rgba(0,0,0,0.5),
+      0 0 80px rgba(201,146,42,0.35),
+      0 0 160px rgba(201,146,42,0.15);
+  }
+
+  /* Wrapper floats — badge and camera overlay stay aligned */
+  .logo-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  /* Full badge — static, never spins */
+  .logo-badge {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 0 24px rgba(201,146,42,0.3));
+    transition: filter 0.4s;
+  }
+  .ring-link:hover .logo-badge {
+    filter: drop-shadow(0 0 32px rgba(201,146,42,0.5));
+  }
+
+
+  @media (max-width: 1024px) {
+    .ring-360 { width: 360px; height: 360px; }
+    .ring-outer, .ring-mid, .ring-inner { inset: 0 0 0 0; }
+    .ring-mid { inset: 22px; }
+    .ring-inner { inset: 44px; }
+    .ring-center { inset: 66px; }
+    nav .nav-links { display: none; }
+  }
+  @media (max-width: 768px) {
+    .ring-360 { width: 280px; height: 280px; }
+    .ring-mid { inset: 16px; }
+    .ring-inner { inset: 32px; }
+    .ring-center { inset: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ NAVBAR ══════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="brand_assets/LOGODOOH2_dark.png" alt="Dooh Event 360" />
+    <div class="nav-logo-text">
+      Dooh Event 360
+      <span>Fotobudka & Obsługa Eventów</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#services">Usługi</a></li>
+    <li><a href="#how-it-works">Jak Działamy</a></li>
+    <li><a href="#gallery">Galeria</a></li>
+    <li><a href="#pricing">Cennik</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+
+  <a href="#contact" class="btn-gold btn-gold-solid" style="font-size:0.72rem; padding: 9px 20px;">
+    Zarezerwuj Event
+  </a>
+</nav>
+
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<section style="min-height: 100vh; display: flex; align-items: center; padding: 100px 2rem 80px; position: relative; overflow: hidden;">
+
+  <!-- Background glows -->
+  <div class="glow-blob" style="width:600px; height:600px; top:-100px; left:-200px; background:radial-gradient(circle, rgba(10,22,40,0.8) 0%, transparent 70%);"></div>
+  <div class="glow-blob" style="width:500px; height:500px; top:50%; right:-100px; background:radial-gradient(circle, rgba(201,146,42,0.06) 0%, transparent 70%); transform:translateY(-50%);"></div>
+  <div class="glow-blob" style="width:800px; height:400px; bottom:0; left:50%; background:radial-gradient(ellipse, rgba(201,146,42,0.04) 0%, transparent 60%); transform:translateX(-50%);"></div>
+
+  <!-- Decorative horizontal lines -->
+  <div style="position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(201,146,42,0.2), transparent);"></div>
+
+  <div style="max-width:1400px; margin:0 auto; width:100%; display:flex; align-items:center; gap:4rem; flex-wrap:wrap;">
+
+    <!-- Left content -->
+    <div style="flex:1; min-width:320px; animation: fadeUp 0.9s cubic-bezier(0.4,0,0.2,1) both;">
+      <div class="badge" style="margin-bottom:1.5rem;">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+        Premium Doświadczenia Eventowe
+      </div>
+
+      <h1 class="hero-heading" style="margin-bottom:1.5rem;">
+        Twój Event,<br/>
+        <em class="text-gradient-gold" style="font-style:italic;">Niezapomniany</em><br/>
+        Na Zawsze.
+      </h1>
+
+      <p style="font-size:1.05rem; line-height:1.75; color:var(--muted); max-width:480px; margin-bottom:2.5rem;">
+        Dostarczamy magię doświadczeń fotograficznych 360°, premium fotobudek oraz kompleksowej obsługi eventów na wesela, imprezy korporacyjne i prywatne przyjęcia w całej Polsce.
+      </p>
+
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:3.5rem;">
+        <a href="#contact" class="btn-gold btn-gold-solid" style="font-size:0.8rem; padding:14px 32px;">
+          Zarezerwuj Termin
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M8 2l5 5-5 5"/></svg>
+        </a>
+        <a href="#gallery" class="btn-gold" style="font-size:0.8rem; padding:14px 32px;">
+          Zobacz Galerię
+        </a>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:flex; gap:2.5rem; flex-wrap:wrap; padding-top:2rem; border-top:1px solid rgba(201,146,42,0.12);">
+        <div>
+          <div class="stat-number text-gold-static">500+</div>
+          <div style="font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:4px;">Zrealizowanych Eventów</div>
+        </div>
+        <div style="width:1px; background:rgba(201,146,42,0.15);"></div>
+        <div>
+          <div class="stat-number text-gold-static">98%</div>
+          <div style="font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:4px;">Zadowolonych Klientów</div>
+        </div>
+        <div style="width:1px; background:rgba(201,146,42,0.15);"></div>
+        <div>
+          <div class="stat-number text-gold-static">8+</div>
+          <div style="font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:4px;">Lat Doświadczenia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right — 360 ring (clickable) -->
+    <div style="display:flex; align-items:center; justify-content:center; flex:0 0 auto; animation: fadeIn 1.2s 0.3s both;">
+      <a href="#" class="ring-link" aria-label="Dooh Event 360 — back to top">
+        <div class="ring-360">
+          <div class="ring-outer"></div>
+          <div class="ring-mid"></div>
+          <div class="ring-inner"></div>
+          <div class="ring-center">
+            <div class="logo-wrapper">
+              <img class="logo-badge" src="brand_assets/LOGODOOH2_dark.png" alt="Dooh Event 360" />
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Scroll cue -->
+  <div style="position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; opacity:0.4;">
+    <span style="font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase;">Przewiń</span>
+    <div style="width:1px; height:40px; background:linear-gradient(to bottom, var(--gold), transparent);"></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ TRUSTED BY ══════════════════════ -->
+<section style="padding: 3rem 2rem; border-top:1px solid rgba(201,146,42,0.08); border-bottom:1px solid rgba(201,146,42,0.08); background:rgba(13,13,28,0.5);">
+  <div style="max-width:1200px; margin:0 auto;">
+    <p style="text-align:center; font-size:0.7rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); margin-bottom:2rem;">Zaufały nam wiodące marki i dynamicznie rozwijające się firmy</p>
+    <div style="display:flex; gap:3rem; justify-content:center; align-items:center; flex-wrap:wrap; opacity:0.45; filter:grayscale(1);">
+      <!-- Placeholder brand logos as text marks -->
+      <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; letter-spacing:0.1em; color:var(--cream);">LUXOR</span>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; letter-spacing:0.1em; color:var(--cream);">VANTAGE</span>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; letter-spacing:0.1em; color:var(--cream);">ÉTOILE</span>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; letter-spacing:0.1em; color:var(--cream);">NOVA GROUP</span>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; letter-spacing:0.1em; color:var(--cream);">MERIDIAN</span>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; letter-spacing:0.1em; color:var(--cream);">SOLARIS</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ SERVICES ══════════════════════ -->
+<section id="services" style="padding: 7rem 1.5rem; position:relative; overflow:hidden;">
+  <div class="glow-blob" style="width:600px; height:400px; top:50%; left:-100px; background:radial-gradient(ellipse, rgba(201,146,42,0.04) 0%, transparent 60%); transform:translateY(-50%);"></div>
+
+  <div style="max-width:1600px; margin:0 auto;">
+    <div class="reveal" style="text-align:center; margin-bottom:4rem;">
+      <div class="ornament"><span>Co Oferujemy</span></div>
+      <h2 class="section-heading" style="margin-bottom:1rem;">
+        Kompleksowa Obsługa <em class="text-gradient-gold">Eventów</em>
+      </h2>
+      <p style="color:var(--muted); max-width:520px; margin:0 auto; line-height:1.75; font-size:0.95rem;">
+        Od kameralnych spotkań po wielkie gale korporacyjne — dbamy o każdy szczegół z precyzją i pasją.
+      </p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap:1rem;">
+
+      <!-- Service 1 -->
+      <div class="service-card reveal" style="transition-delay:0.05s; background-image:url('brand_assets/PIC1.png'); background-size:cover; background-position:center;">
+        <div style="width:52px; height:52px; border:1px solid rgba(201,146,42,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; background:radial-gradient(circle, rgba(201,146,42,0.12), transparent);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2M2 12h20M12 2c-3 4-3 14 0 20M12 2c3 4 3 14 0 20"/></svg>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; margin-bottom:0.75rem;">Fotobudka 360°</h3>
+        <p style="color:var(--muted); font-size:0.88rem; line-height:1.75; margin-bottom:1.25rem;">
+          Nasza autorska fotobudka 360° tworzy spektakularne filmy w zwolnionym tempie, które goście udostępniają natychmiast. Gwiazda każdego eventu.
+        </p>
+        <a href="#pricing" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:gap 0.2s;">
+          Dowiedz się więcej <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 2 -->
+      <div class="service-card reveal" style="transition-delay:0.1s; background-image:url('brand_assets/PIC2.png'); background-size:cover; background-position:center;">
+        <div style="width:52px; height:52px; border:1px solid rgba(201,146,42,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; background:radial-gradient(circle, rgba(201,146,42,0.12), transparent);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M8 12h.01M12 12h.01M16 12h.01"/></svg>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; margin-bottom:0.75rem;">Klasyczna Fotobudka</h3>
+        <p style="color:var(--muted); font-size:0.88rem; line-height:1.75; margin-bottom:1.25rem;">
+          Ponadczasowe doświadczenie z natychmiastowymi wydrukami, spersonalizowanymi szablonami i brandowanymi nakładkami. Idealna na wesela i eventy korporacyjne.
+        </p>
+        <a href="#pricing" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          Dowiedz się więcej <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 3 -->
+      <div class="service-card reveal" style="transition-delay:0.15s; background-image:url('brand_assets/PIC3.png'); background-size:cover; background-position:center;">
+        <div style="width:52px; height:52px; border:1px solid rgba(201,146,42,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; background:radial-gradient(circle, rgba(201,146,42,0.12), transparent);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; margin-bottom:0.75rem;">Pełna Organizacja Eventu</h3>
+        <p style="color:var(--muted); font-size:0.88rem; line-height:1.75; margin-bottom:1.25rem;">
+          Projekt tła, oświetlenie, dekoracje i obsługa na miejscu. Zajmujemy się wszystkim, abyś cieszył się każdą chwilą swojego eventu.
+        </p>
+        <a href="#pricing" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          Dowiedz się więcej <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 4 -->
+      <div class="service-card reveal" style="transition-delay:0.2s; background-image:url('brand_assets/PIC4.png'); background-size:cover; background-position:center;">
+        <div style="width:52px; height:52px; border:1px solid rgba(201,146,42,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; background:radial-gradient(circle, rgba(201,146,42,0.12), transparent);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; margin-bottom:0.75rem;">Aktywacje Korporacyjne</h3>
+        <p style="color:var(--muted); font-size:0.88rem; line-height:1.75; margin-bottom:1.25rem;">
+          Doświadczenia fotograficzne zintegrowane z marką na premiery produktów, konferencje i eventy teamowe — wzmocnij swoją obecność w social mediach.
+        </p>
+        <a href="#pricing" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          Dowiedz się więcej <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 5 -->
+      <div class="service-card reveal" style="transition-delay:0.25s; background-image:url('brand_assets/PIC5.png'); background-size:cover; background-position:center;">
+        <div style="width:52px; height:52px; border:1px solid rgba(201,146,42,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; background:radial-gradient(circle, rgba(201,146,42,0.12), transparent);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; margin-bottom:0.75rem;">Pakiety Weselne</h3>
+        <p style="color:var(--muted); font-size:0.88rem; line-height:1.75; margin-bottom:1.25rem;">
+          Wyjątkowe doświadczenia fotobudki na wesele z personalizowanymi księgami gości, galeriami cyfrowymi i nieograniczonymi wydrukami dla Ciebie i Twoich gości.
+        </p>
+        <a href="#pricing" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          Dowiedz się więcej <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+      <!-- Service 6 -->
+      <div class="service-card reveal" style="transition-delay:0.3s; background-image:url('brand_assets/PCI6.png'); background-size:cover; background-position:center;">
+        <div style="width:52px; height:52px; border:1px solid rgba(201,146,42,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; background:radial-gradient(circle, rgba(201,146,42,0.12), transparent);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; margin-bottom:0.75rem;">Galeria Cyfrowa</h3>
+        <p style="color:var(--muted); font-size:0.88rem; line-height:1.75; margin-bottom:1.25rem;">
+          Każdy event otrzymuje prywatną galerię online z brandowanymi kodami QR, natychmiastowym udostępnianiem w social mediach i pobraniami w wysokiej rozdzielczości dla wszystkich gości.
+        </p>
+        <a href="#pricing" style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+          Dowiedz się więcej <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6h10M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ HOW IT WORKS ══════════════════════ -->
+<section id="how-it-works" style="padding: 7rem 2rem; background:linear-gradient(180deg, rgba(13,13,28,0.6) 0%, rgba(7,7,14,0) 100%); position:relative;">
+  <div style="max-width:1000px; margin:0 auto;">
+    <div class="reveal" style="text-align:center; margin-bottom:4.5rem;">
+      <div class="ornament"><span>Jak To Działa</span></div>
+      <h2 class="section-heading" style="margin-bottom:1rem;">
+        Od Pomysłu do <em class="text-gradient-gold">Niezapomnianego</em><br/>Eventu w 3 Krokach
+      </h2>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:2.5rem;">
+
+      <!-- Step 1 -->
+      <div class="reveal" style="display:flex; gap:2rem; align-items:flex-start;">
+        <div class="step-number">01</div>
+        <div style="flex:1; padding-top:0.6rem; border-left:1px solid rgba(201,146,42,0.15); padding-left:2rem;">
+          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; margin-bottom:0.5rem;">Konsultacja i Personalizacja</h3>
+          <p style="color:var(--muted); font-size:0.9rem; line-height:1.75; max-width:560px;">
+            Zaczynamy od rozmowy, aby poznać Twoją wizję, motyw i oczekiwania dotyczące doświadczeń gości. Następnie personalizujemy każdy szczegół — od projektu tła po szablony wydruków — aby idealnie dopasować się do Twojego eventu.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="reveal" style="display:flex; gap:2rem; align-items:flex-start; transition-delay:0.1s;">
+        <div class="step-number">02</div>
+        <div style="flex:1; padding-top:0.6rem; border-left:1px solid rgba(201,146,42,0.15); padding-left:2rem;">
+          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; margin-bottom:0.5rem;">Sprawna Realizacja i Wsparcie</h3>
+          <p style="color:var(--muted); font-size:0.9rem; line-height:1.75; max-width:560px;">
+            Nasz zespół przyjeżdża 2 godziny przed eventem na montaż i pozostaje do końca imprezy. Dedykowany opiekun na miejscu dba, aby wszystko przebiegało bez zarzutu, podczas gdy Twoi goście bawią się doskonale.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="reveal" style="display:flex; gap:2rem; align-items:flex-start; transition-delay:0.2s;">
+        <div class="step-number">03</div>
+        <div style="flex:1; padding-top:0.6rem; border-left:1px solid rgba(201,146,42,0.15); padding-left:2rem;">
+          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; margin-bottom:0.5rem;">Wspomnienia Dostarczone Natychmiast</h3>
+          <p style="color:var(--muted); font-size:0.9rem; line-height:1.75; max-width:560px;">
+            Goście natychmiast otrzymują cyfrowe kopie za pomocą kodu QR. Po evencie otrzymujesz pełną, brandowaną galerię ze wszystkimi zdjęciami i filmami — gotową do udostępnienia i pielęgnowania na zawsze.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ GALLERY ══════════════════════ -->
+<section id="gallery" style="padding: 7rem 2rem;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <!-- Heading at the top of the section -->
+    <div class="reveal" style="text-align:center; margin-bottom:3.5rem;">
+      <div class="ornament"><span>Portfolio</span></div>
+      <h2 class="section-heading" style="margin-bottom:1rem;">
+        Magia <em class="text-gradient-gold">Chwil</em><br/>Uchwycona Pięknie
+      </h2>
+    </div>
+
+    <!-- Images — clean, no text overlay -->
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; gap:1rem;">
+      <div class="gallery-img reveal" style="grid-column: span 2;">
+        <img src="brand_assets/img1.png" alt="Fotobudka 360° w akcji" />
+        <div class="overlay-color"></div>
+        <div class="img-label" style="opacity:0.75;">
+          <span>Fotobudka 360° w Akcji</span>
+        </div>
+      </div>
+      <div class="gallery-img reveal" style="transition-delay:0.1s;">
+        <img src="brand_assets/img2.png" alt="Dekoracje weselne" />
+        <div class="overlay-color"></div>
+        <div class="img-label" style="opacity:0.75;">
+          <span>Dekoracje Weselne</span>
+        </div>
+      </div>
+      <div class="gallery-img reveal" style="transition-delay:0.15s;">
+        <img src="brand_assets/img3.png" alt="Event korporacyjny" />
+        <div class="overlay-color"></div>
+        <div class="img-label" style="opacity:0.75;">
+          <span>Event Korporacyjny</span>
+        </div>
+      </div>
+      <div class="gallery-img reveal" style="transition-delay:0.2s;">
+        <img src="brand_assets/img4.png" alt="Wydruk zdjęć" />
+        <div class="overlay-color"></div>
+        <div class="img-label" style="opacity:0.75;">
+          <span>Wydruk Zdjęć</span>
+        </div>
+      </div>
+      <div class="gallery-img reveal" style="transition-delay:0.25s;">
+        <img src="brand_assets/img5.png" alt="Impreza" />
+        <div class="overlay-color"></div>
+        <div class="img-label" style="opacity:0.75;">
+          <span>Klimat Imprezy</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:2.5rem;">
+      <a href="#contact" class="btn-gold" style="font-size:0.78rem; padding:12px 28px;">
+        Poproś o Pełne Portfolio
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ WHY US ══════════════════════ -->
+<section style="padding: 7rem 2rem; background:linear-gradient(135deg, rgba(13,13,28,0.8) 0%, rgba(10,22,40,0.4) 100%); position:relative; overflow:hidden;">
+  <div class="glow-blob" style="width:700px; height:500px; top:50%; right:-150px; background:radial-gradient(ellipse, rgba(201,146,42,0.05) 0%, transparent 60%); transform:translateY(-50%);"></div>
+
+  <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center;">
+
+    <div class="reveal">
+      <div class="ornament" style="justify-content:flex-start;"><span>Dlaczego Dooh Event</span></div>
+      <h2 class="section-heading" style="margin-bottom:1.5rem;">
+        Jesteśmy <em class="text-gradient-gold">Kompleksowym</em><br/>Doświadczeniem Eventowym
+      </h2>
+      <p style="color:var(--muted); font-size:0.95rem; line-height:1.8; margin-bottom:2.5rem;">
+        W przeciwieństwie do firm zajmujących się tylko wynajmem, jesteśmy przy Tobie od koncepcji do finalnej galerii. Nasz zespół traktuje każdy event jak swój własny, dostarczając doświadczeń, które za każdym razem przekraczają oczekiwania.
+      </p>
+      <a href="#contact" class="btn-gold btn-gold-solid" style="font-size:0.78rem; padding:13px 28px;">
+        Porozmawiajmy
+      </a>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.15s; display:flex; flex-direction:column; gap:1.5rem;">
+      <div style="display:flex; gap:1.25rem; align-items:flex-start; padding:1.25rem; background:rgba(22,22,48,0.9); border:1px solid rgba(201,146,42,0.18);">
+        <div style="color:var(--gold); flex-shrink:0; margin-top:2px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:3px;">Profesjonalny Sprzęt</div>
+          <div style="color:var(--muted); font-size:0.85rem; line-height:1.65;">Profesjonalne kamery, oświetlenie i systemy druku zapewniające jakość studyjną.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1.25rem; align-items:flex-start; padding:1.25rem; background:rgba(22,22,48,0.9); border:1px solid rgba(201,146,42,0.18);">
+        <div style="color:var(--gold); flex-shrink:0; margin-top:2px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:3px;">Dedykowany Zespół Na Miejscu</div>
+          <div style="color:var(--muted); font-size:0.85rem; line-height:1.65;">Nasi opiekunowie angażują gości, rozwiązują problemy techniczne i utrzymują wysoką energię przez cały czas trwania imprezy.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1.25rem; align-items:flex-start; padding:1.25rem; background:rgba(22,22,48,0.9); border:1px solid rgba(201,146,42,0.18);">
+        <div style="color:var(--gold); flex-shrink:0; margin-top:2px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:3px;">W Pełni Spersonalizowane</div>
+          <div style="color:var(--muted); font-size:0.85rem; line-height:1.65;">Każdy element — wydruki, nakładki, tła, ekrany — jest dopasowany do unikalnej tożsamości Twojego eventu.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1.25rem; align-items:flex-start; padding:1.25rem; background:rgba(22,22,48,0.9); border:1px solid rgba(201,146,42,0.18);">
+        <div style="color:var(--gold); flex-shrink:0; margin-top:2px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:3px;">Natychmiastowe Udostępnianie</div>
+          <div style="color:var(--muted); font-size:0.85rem; line-height:1.65;">Pliki cyfrowe dostarczone natychmiast przez kod QR — żadnego czekania, aby wrócić do wspomnień.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════ PRICING ══════════════════════ -->
+<section id="pricing" style="padding: 7rem 2rem;">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div class="reveal" style="text-align:center; margin-bottom:4rem;">
+      <div class="ornament"><span>Pakiety</span></div>
+      <h2 class="section-heading" style="margin-bottom:1rem;">
+        Atrakcyjne <em class="text-gradient-gold">Plany</em> Cenowe
+      </h2>
+      <p style="color:var(--muted); max-width:480px; margin:0 auto; font-size:0.92rem; line-height:1.75;">
+        Przejrzyste ceny bez ukrytych opłat. Każdy pakiet zawiera montaż, demontaż i dedykowanego opiekuna.
+      </p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem;">
+
+      <!-- Starter -->
+      <div class="pricing-card reveal">
+        <div style="margin-bottom:2rem;">
+          <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem;">Starter</div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:700; line-height:1; color:var(--cream);">
+            999<span style="font-size:1.2rem; font-weight:400; color:var(--muted);">zł</span>
+          </div>
+          <div style="color:var(--muted); font-size:0.8rem; margin-top:4px;">za event / 3 godziny</div>
+        </div>
+        <div style="height:1px; background:rgba(201,146,42,0.15); margin-bottom:1.5rem;"></div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem;">
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Klasyczna Fotobudka
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Nieograniczone Wydruki
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            1 Własny Szablon
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Galeria Cyfrowa
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.35);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="rgba(240,235,224,0.3)" stroke-width="2"><line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/></svg>
+            Fotobudka 360°
+          </li>
+        </ul>
+        <a href="#contact" class="btn-gold" style="display:block; text-align:center; font-size:0.75rem; padding:12px;">
+          Zacznij Teraz
+        </a>
+      </div>
+
+      <!-- Premium (featured) -->
+      <div class="pricing-card featured reveal" style="transition-delay:0.1s; position:relative;">
+        <div style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#C9922A,#E8B84B); color:#07070E; font-size:0.65rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:4px 16px; white-space:nowrap;">Najpopularniejszy</div>
+        <div style="margin-bottom:2rem;">
+          <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:0.5rem;">Premium</div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:700; line-height:1;" class="text-gradient-gold">
+            1999<span style="font-size:1.2rem; font-weight:400;">zł</span>
+          </div>
+          <div style="color:var(--muted); font-size:0.8rem; margin-top:4px;">za event / 5 godzin</div>
+        </div>
+        <div style="height:1px; background:rgba(201,146,42,0.3); margin-bottom:1.5rem;"></div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem;">
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.85);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#E8B84B" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Fotobudka 360° + Klasyczna
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.85);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#E8B84B" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Nieograniczone Wydruki i Filmy
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.85);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#E8B84B" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            3 Własne Szablony
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.85);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#E8B84B" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Personalizowane Tło
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.85);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#E8B84B" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Księga Gości
+          </li>
+        </ul>
+        <a href="#contact" class="btn-gold btn-gold-solid" style="display:block; text-align:center; font-size:0.75rem; padding:12px;">
+          Zarezerwuj Premium
+        </a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card reveal" style="transition-delay:0.2s;">
+        <div style="margin-bottom:2rem;">
+          <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem;">Enterprise</div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:700; line-height:1; color:var(--cream);">
+            Custom
+          </div>
+          <div style="color:var(--muted); font-size:0.8rem; margin-top:4px;">dopasowana do Twoich potrzeb</div>
+        </div>
+        <div style="height:1px; background:rgba(201,146,42,0.15); margin-bottom:1.5rem;"></div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem;">
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Wszystko z pakietu Premium
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Eventy Wielodniowe
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Pełna Dekoracja i Oświetlenie
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Dedykowany Opiekun Klienta
+          </li>
+          <li style="display:flex; gap:10px; align-items:center; font-size:0.85rem; color:rgba(240,235,224,0.7);">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#C9922A" stroke-width="2"><polyline points="1 7 5 11 13 3"/></svg>
+            Opcja White-label
+          </li>
+        </ul>
+        <a href="#contact" class="btn-gold" style="display:block; text-align:center; font-size:0.75rem; padding:12px;">
+          Skontaktuj się
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ TESTIMONIALS ══════════════════════ -->
+<section style="padding: 7rem 2rem; background:linear-gradient(180deg, rgba(13,13,28,0.5) 0%, rgba(7,7,14,0) 100%);">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="reveal" style="text-align:center; margin-bottom:4rem;">
+      <div class="ornament"><span>Opinie</span></div>
+      <h2 class="section-heading">
+        Co Mówią Nasi <em class="text-gradient-gold">Klienci</em>
+      </h2>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem;">
+
+      <div class="testimonial-card reveal">
+        <div class="stars" style="margin-bottom:1rem; font-size:0.9rem;">★★★★★</div>
+        <p style="color:rgba(240,235,224,0.8); font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem; font-style:italic;">
+          „Fotobudka 360° była absolutną gwiazdą naszego wesela! Każdy gość był zachwycony. Zespół był profesjonalny, punktualny i autentycznie zaangażowany. Zarezerwujemy ponownie bez chwili wahania."
+        </p>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#C9922A,#E8B84B); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-weight:700; color:#07070E; font-size:1rem;">A</div>
+          <div>
+            <div style="font-weight:600; font-size:0.9rem;">Anna & Michał K.</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Ślub · Kraków, 2024</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal" style="transition-delay:0.1s;">
+        <div class="stars" style="margin-bottom:1rem; font-size:0.9rem;">★★★★★</div>
+        <p style="color:rgba(240,235,224,0.8); font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem; font-style:italic;">
+          „Wynajęliśmy Dooh Event na coroczną galę firmową. Fotobudka z naszym logo zrobiła furorę — pracownicy publikowali zdjęcia na całym LinkedIn. Wyjątkowa jakość."
+        </p>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#0A1628,#1a2a4a); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-weight:700; color:var(--gold); font-size:1rem; border:1px solid rgba(201,146,42,0.3);">T</div>
+          <div>
+            <div style="font-weight:600; font-size:0.9rem;">Tomasz W.</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Gala Firmowa · Warszawa, 2024</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal" style="transition-delay:0.2s;">
+        <div class="stars" style="margin-bottom:1rem; font-size:0.9rem;">★★★★★</div>
+        <p style="color:rgba(240,235,224,0.8); font-size:0.9rem; line-height:1.8; margin-bottom:1.5rem; font-style:italic;">
+          „Niezrównana obsługa od początku do końca. Spersonalizowane tło idealnie pasowało do naszej marki, a galeria była dostępna zanim goście zdążyli wyjść! Nasi klienci byli pod ogromnym wrażeniem."
+        </p>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#C9922A,#E8B84B); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-weight:700; color:#07070E; font-size:1rem;">M</div>
+          <div>
+            <div style="font-weight:600; font-size:0.9rem;">Marta S.</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Premiera Marki · Gdańsk, 2025</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ FAQ ══════════════════════ -->
+<section style="padding: 7rem 2rem;">
+  <div style="max-width:800px; margin:0 auto;">
+    <div class="reveal" style="text-align:center; margin-bottom:4rem;">
+      <div class="ornament"><span>FAQ</span></div>
+      <h2 class="section-heading">
+        Najczęściej Zadawane <em class="text-gradient-gold">Pytania</em>
+      </h2>
+    </div>
+
+    <div style="display:flex; flex-direction:column;" class="reveal">
+
+      <div class="faq-item">
+        <button class="faq-trigger">
+          Z jakim wyprzedzeniem powinienem rezerwować?
+          <div class="faq-icon"></div>
+        </button>
+        <div class="faq-body">
+          <p>Zalecamy rezerwację z co najmniej 4–6-tygodniowym wyprzedzeniem dla standardowych eventów oraz 2–3-miesięcznym dla terminów w szczycie sezonu (czerwiec–wrzesień, grudzień). Popularne weekendy zapełniają się szybko, więc im wcześniej, tym lepiej.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-trigger">
+          Jaki obszar obsługujecie?
+          <div class="faq-icon"></div>
+        </button>
+        <div class="faq-body">
+          <p>Działamy na terenie całej Polski. Dla eventów oddalonych o ponad 80 km od naszej bazy mogą zostać naliczone koszty dojazdu. Obsługujemy również wydarzenia za granicą dla dużych klientów korporacyjnych — skontaktuj się z nami po indywidualną wycenę.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-trigger">
+          Ile czasu zajmuje montaż?
+          <div class="faq-icon"></div>
+        </button>
+        <div class="faq-body">
+          <p>Nasz zespół przybywa zazwyczaj 1,5–2 godziny przed rozpoczęciem eventu. Montaż zajmuje około 60–90 minut w zależności od pakietu. Zajmujemy się wszystkim — Ty nie musisz myśleć o niczym.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-trigger">
+          Czy mogę dostosować szablon wydruku i tło?
+          <div class="faq-icon"></div>
+        </button>
+        <div class="faq-body">
+          <p>Oczywiście. Wszystkie nasze pakiety zawierają projekt własnego szablonu wydruku. Współpracujemy z Tobą, aby stworzyć szablon pasujący do motywu, kolorów i identyfikacji wizualnej Twojego eventu. Personalizacja fizycznego tła dostępna jest od pakietu Premium wzwyż.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-trigger">
+          Czy goście muszą pobierać aplikację, aby udostępniać zdjęcia?
+          <div class="faq-icon"></div>
+        </button>
+        <div class="faq-body">
+          <p>Żadna aplikacja nie jest wymagana. Goście skanują kod QR przy budce i natychmiast otrzymują cyfrową kopię zdjęcia SMS-em lub e-mailem. Kod QR odsyła również do pełnej galerii eventu, dostępnej przez 30 dni po imprezie.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-trigger">
+          Co się stanie, jeśli podczas eventu wystąpi problem techniczny?
+          <div class="faq-icon"></div>
+        </button>
+        <div class="faq-body">
+          <p>Nasz obsługujący na miejscu pracownik jest przeszkolony do rozwiązania większości problemów w ciągu kilku minut. Na każdy event zabieramy też sprzęt zapasowy. W niezwykle rzadkim przypadku całkowitej awarii oferujemy częściowy zwrot kosztów proporcjonalny do czasu przestoju.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ CTA ══════════════════════ -->
+<section id="contact" style="padding: 8rem 2rem; position:relative; overflow:hidden;">
+  <div class="glow-blob" style="width:800px; height:600px; top:50%; left:50%; background:radial-gradient(ellipse, rgba(201,146,42,0.07) 0%, transparent 60%); transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; inset:0; background:linear-gradient(135deg, rgba(10,22,40,0.4), rgba(7,7,14,0));"></div>
+
+  <div style="max-width:700px; margin:0 auto; text-align:center; position:relative;">
+    <div class="reveal">
+      <img src="brand_assets/LOGODOOH2_dark.png" alt="" style="width:80px; height:80px; object-fit:contain; margin:0 auto 1.5rem; display:block; filter:drop-shadow(0 0 20px rgba(201,146,42,0.4)); animation: float 4s ease-in-out infinite;" />
+      <div class="ornament"><span>Skontaktuj się</span></div>
+      <h2 class="section-heading" style="margin-bottom:1rem;">
+        Gotowy, by <em class="text-gradient-gold">Zachwycić</em><br/>Gości na Swoim Evencie?
+      </h2>
+      <p style="color:var(--muted); font-size:0.95rem; line-height:1.8; margin-bottom:3rem; max-width:520px; margin-left:auto; margin-right:auto;">
+        Opowiedz nam o swoim evencie, a przygotujemy spersonalizowany pakiet dopasowany do Twojej wizji i budżetu. Odpowiedź w ciągu 24 godzin.
+      </p>
+
+      <form style="display:flex; flex-direction:column; gap:1rem; max-width:480px; margin:0 auto 2rem;" onsubmit="handleSubmit(event)">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <input type="text" placeholder="Twoje Imię" required
+            style="background:rgba(13,13,28,0.8); border:1px solid rgba(201,146,42,0.2); padding:12px 16px; color:var(--cream); font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='rgba(201,146,42,0.5)'" onblur="this.style.borderColor='rgba(201,146,42,0.2)'" />
+          <input type="email" placeholder="Adres Email" required
+            style="background:rgba(13,13,28,0.8); border:1px solid rgba(201,146,42,0.2); padding:12px 16px; color:var(--cream); font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='rgba(201,146,42,0.5)'" onblur="this.style.borderColor='rgba(201,146,42,0.2)'" />
+        </div>
+        <input type="text" placeholder="Rodzaj eventu (Ślub / Firmowy / Przyjęcie…)"
+          style="background:rgba(13,13,28,0.8); border:1px solid rgba(201,146,42,0.2); padding:12px 16px; color:var(--cream); font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='rgba(201,146,42,0.5)'" onblur="this.style.borderColor='rgba(201,146,42,0.2)'" />
+        <textarea rows="4" placeholder="Opowiedz nam o swoim evencie…"
+          style="background:rgba(13,13,28,0.8); border:1px solid rgba(201,146,42,0.2); padding:12px 16px; color:var(--cream); font-family:'DM Sans',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s; resize:vertical;"
+          onfocus="this.style.borderColor='rgba(201,146,42,0.5)'" onblur="this.style.borderColor='rgba(201,146,42,0.2)'"></textarea>
+        <button type="submit" class="btn-gold btn-gold-solid" style="width:100%; justify-content:center; font-size:0.82rem; padding:14px;">
+          Wyślij Zapytanie
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M8 2l5 5-5 5"/></svg>
+        </button>
+      </form>
+
+      <p style="font-size:0.78rem; color:var(--muted);">
+        Możesz też napisać bezpośrednio na
+        <a href="mailto:hello@doohevent.pl" style="color:var(--gold); text-decoration:none;">hello@doohevent.pl</a>
+        · Dostępny WhatsApp
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer style="padding: 4rem 2rem 2rem; border-top:1px solid rgba(201,146,42,0.1); background:rgba(7,7,14,0.8);">
+  <div style="max-width:1200px; margin:0 auto;">
+
+    <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:3rem; margin-bottom:3rem; flex-wrap:wrap;">
+
+      <!-- Brand -->
+      <div>
+        <div class="nav-logo" style="margin-bottom:1rem; display:inline-flex;">
+          <img src="brand_assets/LOGODOOH2_dark.png" alt="Dooh Event 360" style="width:40px; height:40px; object-fit:contain;" />
+          <div class="nav-logo-text">
+            Dooh Event 360
+            <span>Fotobudka & Event Services</span>
+          </div>
+        </div>
+        <p style="color:var(--muted); font-size:0.85rem; line-height:1.75; max-width:260px; margin-bottom:1.5rem;">
+          Wyjątkowe doświadczenia z fotobudką i kompleksowa produkcja eventów na terenie całej Polski. Zamieniamy chwile we wspomnienia od 2016 roku.
+        </p>
+        <div style="display:flex; gap:10px;">
+          <a href="#" aria-label="Instagram" style="width:34px; height:34px; border:1px solid rgba(201,146,42,0.2); display:flex; align-items:center; justify-content:center; color:var(--muted); text-decoration:none; transition:border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='rgba(201,146,42,0.5)'; this.style.color='#E8B84B'" onmouseout="this.style.borderColor='rgba(201,146,42,0.2)'; this.style.color='var(--muted)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" aria-label="Facebook" style="width:34px; height:34px; border:1px solid rgba(201,146,42,0.2); display:flex; align-items:center; justify-content:center; color:var(--muted); text-decoration:none; transition:border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='rgba(201,146,42,0.5)'; this.style.color='#E8B84B'" onmouseout="this.style.borderColor='rgba(201,146,42,0.2)'; this.style.color='var(--muted)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="#" aria-label="TikTok" style="width:34px; height:34px; border:1px solid rgba(201,146,42,0.2); display:flex; align-items:center; justify-content:center; color:var(--muted); text-decoration:none; transition:border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='rgba(201,146,42,0.5)'; this.style.color='#E8B84B'" onmouseout="this.style.borderColor='rgba(201,146,42,0.2)'; this.style.color='var(--muted)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.77a8.16 8.16 0 0 0 4.77 1.53V6.84a4.85 4.85 0 0 1-1-.15z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:1rem; color:var(--cream);">Usługi</h4>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem;">
+          <li><a href="#services" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Fotobudka 360°</a></li>
+          <li><a href="#services" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Klasyczna Fotobudka</a></li>
+          <li><a href="#services" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Organizacja Eventu</a></li>
+          <li><a href="#services" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Pakiety Firmowe</a></li>
+          <li><a href="#services" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Pakiety Ślubne</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:1rem; color:var(--cream);">Firma</h4>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem;">
+          <li><a href="#" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">O nas</a></li>
+          <li><a href="#gallery" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Galeria</a></li>
+          <li><a href="#pricing" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Cennik</a></li>
+          <li><a href="#" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Blog</a></li>
+          <li><a href="#contact" style="font-size:0.84rem; color:var(--muted); text-decoration:none; transition:color 0.2s;" onmouseover="this.style.color='#E8B84B'" onmouseout="this.style.color='var(--muted)'">Kontakt</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; margin-bottom:1rem; color:var(--cream);">Kontakt</h4>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem;">
+          <li style="display:flex; gap:8px; align-items:flex-start;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <a href="mailto:hello@doohevent.pl" style="font-size:0.84rem; color:var(--muted); text-decoration:none;">hello@doohevent.pl</a>
+          </li>
+          <li style="display:flex; gap:8px; align-items:flex-start;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.41 2 2 0 0 1 3.57 1.5h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.04a16 16 0 0 0 6.06 6.06l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16.5l.42.42z"/></svg>
+            <span style="font-size:0.84rem; color:var(--muted);">+48 123 456 789</span>
+          </li>
+          <li style="display:flex; gap:8px; align-items:flex-start;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9922A" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="font-size:0.84rem; color:var(--muted);">Kraków, Polska</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div style="border-top:1px solid rgba(201,146,42,0.08); padding-top:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div style="font-size:0.78rem; color:var(--muted);">
+        © 2025 Dooh Event 360. Wszelkie prawa zastrzeżone.
+      </div>
+      <div style="display:flex; gap:1.5rem;">
+        <a href="#" style="font-size:0.78rem; color:var(--muted); text-decoration:none;">Polityka Prywatności</a>
+        <a href="#" style="font-size:0.78rem; color:var(--muted); text-decoration:none;">Warunki Usługi</a>
+      </div>
+    </div>
+
+    <!-- Large watermark text -->
+    <div style="text-align:center; margin-top:1rem; pointer-events:none; user-select:none;">
+      <span style="font-family:'Cormorant Garamond',serif; font-size:clamp(3rem,10vw,8rem); font-weight:700; color:rgba(201,146,42,0.04); letter-spacing:0.05em; line-height:1;">Doohevent</span>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ══════════════════════ SCRIPTS ══════════════════════ -->
+<script>
+  // ── Custom 120-FPS smooth scroll ──
+  (function () {
+    // Ease: custom expo-out feels snappy on 120 Hz
+    function easeOutExpo(t) {
+      return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+    }
+
+    let scrollRaf = null;
+
+    function smoothScrollTo(targetY, duration) {
+      const startY = window.scrollY;
+      const dist   = targetY - startY;
+      if (Math.abs(dist) < 1) return;
+      let start = null;
+
+      function step(ts) {
+        if (!start) start = ts;
+        const elapsed  = ts - start;
+        const progress = Math.min(elapsed / duration, 1);
+        window.scrollTo(0, startY + dist * easeOutExpo(progress));
+        if (progress < 1) scrollRaf = requestAnimationFrame(step);
+      }
+
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = requestAnimationFrame(step);
+    }
+
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (href === '#') { e.preventDefault(); smoothScrollTo(0, 900); return; }
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const navH = document.querySelector('nav')?.offsetHeight || 70;
+      const targetY = target.getBoundingClientRect().top + window.scrollY - navH;
+      smoothScrollTo(targetY, 900);
+    });
+  })();
+
+  // ── Scroll reveal (IntersectionObserver — still best for entry timing) ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        observer.unobserve(el.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = 'Wysłano! Skontaktujemy się w ciągu 24h.';
+    btn.style.background = 'linear-gradient(135deg,#2a5c2a,#3a7a3a)';
+    btn.style.color = '#fff';
+    btn.style.border = 'none';
+    e.target.reset();
+    setTimeout(() => {
+      btn.innerHTML = 'Wyślij Zapytanie <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M8 2l5 5-5 5"/></svg>';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.border = '';
+    }, 4000);
+  }
+
+  // ── Fireworks on both sides ──
+  (function () {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997;opacity:0.42;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const COLORS = ['#F5D98A','#E8B84B','#C9922A','#ffffff','#E8B84B','#F5D98A'];
+
+    /* ── Particle ── */
+    function Particle(x, y, color) {
+      const angle = Math.random() * Math.PI * 2;
+      const spd   = 0.8 + Math.random() * 3.5;
+      this.x = x; this.y = y; this.color = color;
+      this.vx = Math.cos(angle) * spd;
+      this.vy = Math.sin(angle) * spd - 1;
+      this.gravity = 0.07;
+      this.life = 1;
+      this.decay = 0.011 + Math.random() * 0.013;
+      this.r = 1.5 + Math.random() * 2;
+      // occasional long glitter tail
+      this.tail = Math.random() < 0.3;
+    }
+    Particle.prototype.update = function () {
+      this.vx *= 0.97; this.vy += this.gravity;
+      this.x += this.vx; this.y += this.vy;
+      this.life -= this.decay;
+    };
+    Particle.prototype.draw = function () {
+      ctx.globalAlpha = Math.max(0, this.life) * 0.75;
+      if (this.tail) {
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.vx * 4, this.y - this.vy * 4);
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = this.r * 0.7;
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r * this.life, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    /* ── Rocket ── */
+    function Rocket(side) {
+      const margin = canvas.width * 0.13;
+      this.x = side === 'left'
+        ? margin * (0.2 + Math.random() * 0.8)
+        : canvas.width - margin * (0.2 + Math.random() * 0.8);
+      this.y = canvas.height + 10;
+      this.vy = -(7 + Math.random() * 5);
+      this.vx = (Math.random() - 0.5) * 1.2;
+      this.targetY = canvas.height * (0.08 + Math.random() * 0.55);
+      this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      this.trail = [];
+      this.done = false;
+    }
+    Rocket.prototype.update = function () {
+      this.trail.push({ x: this.x, y: this.y });
+      if (this.trail.length > 10) this.trail.shift();
+      this.x += this.vx; this.y += this.vy;
+      this.vy += 0.12; // slight deceleration
+      if (this.y <= this.targetY || this.vy >= 0) { this.done = true; this.explode(); }
+    };
+    Rocket.prototype.explode = function () {
+      const n = 45 + Math.floor(Math.random() * 25);
+      for (let i = 0; i < n; i++) particles.push(new Particle(this.x, this.y, this.color));
+    };
+    Rocket.prototype.draw = function () {
+      for (let i = 1; i < this.trail.length; i++) {
+        const alpha = (i / this.trail.length) * 0.6;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.moveTo(this.trail[i-1].x, this.trail[i-1].y);
+        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    const rockets = [], particles = [];
+    let last = 0;
+
+    function launchPair() {
+      rockets.push(new Rocket('left'));
+      if (Math.random() < 0.7) rockets.push(new Rocket('right'));
+    }
+
+    function loop(ts) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (ts - last > 1800 + Math.random() * 1400) {
+        launchPair();
+        last = ts;
+      }
+
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        rockets[i].update();
+        if (!rockets[i].done) rockets[i].draw();
+        else rockets.splice(i, 1);
+      }
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        if (particles[i].life > 0) particles[i].draw();
+        else particles.splice(i, 1);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    // Small initial delay so page loads first
+    setTimeout(() => requestAnimationFrame(loop), 600);
+  })();
+
+  // Navbar shrink on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(7,7,14,0.97)';
+      nav.style.borderBottomColor = 'rgba(201,146,42,0.15)';
+    } else {
+      nav.style.background = 'linear-gradient(to bottom, rgba(7,7,14,0.98) 0%, rgba(7,7,14,0) 100%)';
+      nav.style.borderBottomColor = 'rgba(201,146,42,0.1)';
+    }
+  }, { passive: true });
+
+  // ── Magic click sparkles ──
+  (function() {
+    const colors = ['#F5D98A', '#E8B84B', '#C9922A', '#ffffff'];
+
+    // 4-pointed star SVG at a given size and color
+    function starSVG(size, color) {
+      const h = size / 2, q = size / 5;
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 10 10">` +
+        `<polygon points="5,0 6,4 10,5 6,6 5,10 4,6 0,5 4,4" fill="${color}"/>` +
+        `</svg>`;
+    }
+
+    // Small diamond SVG
+    function diamondSVG(size, color) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 10 10">` +
+        `<polygon points="5,0 10,5 5,10 0,5" fill="${color}"/>` +
+        `</svg>`;
+    }
+
+    // Tiny cross/sparkle SVG
+    function crossSVG(size, color) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 10 10">` +
+        `<line x1="5" y1="0" x2="5" y2="10" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/>` +
+        `<line x1="0" y1="5" x2="10" y2="5" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/>` +
+        `<line x1="1.5" y1="1.5" x2="8.5" y2="8.5" stroke="${color}" stroke-width="1" stroke-linecap="round" opacity="0.6"/>` +
+        `<line x1="8.5" y1="1.5" x2="1.5" y2="8.5" stroke="${color}" stroke-width="1" stroke-linecap="round" opacity="0.6"/>` +
+        `</svg>`;
+    }
+
+    const shapes = [starSVG, diamondSVG, crossSVG];
+
+    // Inject keyframes once
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes magic-spark {
+        0%   { transform: translate(-50%,-50%) translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+        70%  { opacity: 0.8; }
+        100% { transform: translate(-50%,-50%) translate(var(--tx),var(--ty)) scale(0.1) rotate(var(--rot)); opacity: 0; }
+      }
+      .magic-spark-el {
+        position: fixed;
+        pointer-events: none;
+        z-index: 99999;
+        animation: magic-spark var(--dur) cubic-bezier(0.2,0.8,0.3,1) forwards;
+      }
+    `;
+    document.head.appendChild(style);
+
+    document.addEventListener('click', (e) => {
+      const count = 10;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.7;
+        const dist  = 35 + Math.random() * 55;
+        const tx    = Math.cos(angle) * dist;
+        const ty    = Math.sin(angle) * dist;
+        const size  = 8 + Math.floor(Math.random() * 10);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const dur   = (0.5 + Math.random() * 0.4).toFixed(2) + 's';
+        const rot   = (Math.random() * 360 - 180).toFixed(0) + 'deg';
+
+        const el = document.createElement('div');
+        el.className = 'magic-spark-el';
+        el.style.left = e.clientX + 'px';
+        el.style.top  = e.clientY + 'px';
+        el.style.setProperty('--tx', tx + 'px');
+        el.style.setProperty('--ty', ty + 'px');
+        el.style.setProperty('--dur', dur);
+        el.style.setProperty('--rot', rot);
+        el.innerHTML = shape(size, color);
+        document.body.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
