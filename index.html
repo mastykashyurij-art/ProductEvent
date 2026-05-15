@@ -853,14 +853,14 @@ tailwind.config = {
     /* Hide glow blobs — primary overflow source on mobile */
     .glow-blob { display: none !important; }
 
-    .hero-inner { flex-direction: column !important; gap: 2rem !important; align-items: center !important; }
+    .hero-inner { flex-direction: column !important; gap: 1.5rem !important; align-items: center !important; }
     .hero-ring-wrap { order: -1; }
 
-    /* Ring — large and prominent */
-    .ring-360 { width: 240px !important; height: 240px !important; }
-    .ring-mid { inset: 18px !important; }
-    .ring-inner { inset: 36px !important; }
-    .ring-center { inset: 54px !important; }
+    /* Ring — 1/3 of landing page, responsive to every phone width */
+    .ring-360 { width: min(76vw, 320px) !important; height: min(76vw, 320px) !important; }
+    .ring-mid { inset: 5.5% !important; }
+    .ring-inner { inset: 11% !important; }
+    .ring-center { inset: 16.5% !important; }
 
     .services-grid { grid-template-columns: repeat(2, 1fr) !important; }
     .gallery-grid { grid-template-columns: 1fr !important; }
@@ -878,10 +878,11 @@ tailwind.config = {
     nav { padding: 0 1rem !important; }
     .services-grid { grid-template-columns: 1fr !important; }
     .hero-inner > div:first-child { min-width: 0 !important; width: 100% !important; }
-    .ring-360 { width: 200px !important; height: 200px !important; }
-    .ring-mid { inset: 15px !important; }
-    .ring-inner { inset: 30px !important; }
-    .ring-center { inset: 45px !important; }
+    /* vw-based ring scales to every phone width */
+    .ring-360 { width: 78vw !important; height: 78vw !important; }
+    .ring-mid { inset: 5.5% !important; }
+    .ring-inner { inset: 11% !important; }
+    .ring-center { inset: 16.5% !important; }
   }
 </style>
 </head>
