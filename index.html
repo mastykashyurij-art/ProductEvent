@@ -831,22 +831,36 @@ tailwind.config = {
     .services-grid { grid-template-columns: repeat(3, 1fr) !important; }
   }
 
+  /* ── Mobile nav logo animation ── */
+  @keyframes navLogoFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 6px rgba(201,146,42,0.5)); }
+    50%       { transform: translateY(-4px) rotate(3deg); filter: drop-shadow(0 0 14px rgba(232,184,75,0.8)); }
+  }
+  @keyframes navLogoGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0); }
+    50%       { box-shadow: 0 0 20px 6px rgba(201,146,42,0.25); }
+  }
+
   /* ── 768px (mobile) ── */
   @media (max-width: 768px) {
-    .ring-360 { width: 220px; height: 220px; }
-    .ring-mid { inset: 16px; }
-    .ring-inner { inset: 32px; }
-    .ring-center { inset: 48px; }
-
     section { padding-top: 4rem !important; padding-bottom: 4rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
     nav { padding-left: 1rem !important; padding-right: 1rem !important; }
 
-    /* Hide glow blobs — decorative only, primary overflow source on mobile */
+    /* Nav logo — larger + persistent float animation */
+    .nav-logo img { width: 56px !important; height: 56px !important; animation: navLogoFloat 3s ease-in-out infinite; }
+    .nav-logo-text { font-size: 1.05rem !important; }
+
+    /* Hide glow blobs — primary overflow source on mobile */
     .glow-blob { display: none !important; }
 
-    .hero-inner { flex-direction: column !important; gap: 2.5rem !important; align-items: center !important; }
+    .hero-inner { flex-direction: column !important; gap: 2rem !important; align-items: center !important; }
     .hero-ring-wrap { order: -1; }
-    .ring-360 { width: 180px !important; height: 180px !important; }
+
+    /* Ring — large and prominent */
+    .ring-360 { width: 240px !important; height: 240px !important; }
+    .ring-mid { inset: 18px !important; }
+    .ring-inner { inset: 36px !important; }
+    .ring-center { inset: 54px !important; }
 
     .services-grid { grid-template-columns: repeat(2, 1fr) !important; }
     .gallery-grid { grid-template-columns: 1fr !important; }
@@ -855,11 +869,7 @@ tailwind.config = {
     .pricing-grid { grid-template-columns: 1fr !important; }
 
     nav > a.btn-gold { display: none !important; }
-
     .section-heading { font-size: clamp(1.8rem, 6vw, 2.8rem) !important; }
-
-    .glow-blob { max-width: 100vw !important; }
-
     .step-number { font-size: 2.5rem !important; min-width: 48px; }
   }
 
@@ -868,10 +878,10 @@ tailwind.config = {
     nav { padding: 0 1rem !important; }
     .services-grid { grid-template-columns: 1fr !important; }
     .hero-inner > div:first-child { min-width: 0 !important; width: 100% !important; }
-    .ring-360 { width: 140px !important; height: 140px !important; }
-    .ring-mid { inset: 12px !important; }
-    .ring-inner { inset: 24px !important; }
-    .ring-center { inset: 36px !important; }
+    .ring-360 { width: 200px !important; height: 200px !important; }
+    .ring-mid { inset: 15px !important; }
+    .ring-inner { inset: 30px !important; }
+    .ring-center { inset: 45px !important; }
   }
 </style>
 </head>
